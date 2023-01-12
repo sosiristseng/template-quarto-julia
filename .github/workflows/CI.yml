@@ -55,7 +55,7 @@ jobs:
           docker run
           -v ${{ github.workspace }}:/work
           -e JULIA_NUM_THREADS=auto
-          myimage:test
+          ${{ env.IMAGE_NAME }}:test
           jupyter nbconvert --to notebook --ExecutePreprocessor.timeout=${{ env.TIMEOUT }} --execute --inplace
           /work/docs/${{ matrix.notebook }}.ipynb
       - name: Upload Notebook
