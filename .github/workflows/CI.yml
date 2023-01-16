@@ -54,7 +54,6 @@ jobs:
         run: >
           docker run
           -v ${{ github.workspace }}:/work
-          -e JULIA_NUM_THREADS=auto
           ${{ env.IMAGE_NAME }}:test
           jupyter nbconvert --to notebook --ExecutePreprocessor.timeout=${{ env.TIMEOUT }} --execute --inplace
           /work/docs/${{ matrix.notebook }}.ipynb
@@ -89,9 +88,6 @@ jobs:
       - name: Set output flag
         id: setoutput
         run: echo "success=true" >> $GITHUB_OUTPUT
-      - name: Setup Pages
-        id: pages
-        uses: actions/configure-pages@v2
       - name: Upload page artifact
         if: github.ref == 'refs/heads/main'
         uses: actions/upload-pages-artifact@v1
