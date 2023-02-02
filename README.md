@@ -46,24 +46,3 @@ Related files:
 GitHub acttions periodically update Julia dependencies and make a PR if the notebooks are executed successfully with the updated packages.
 
 [See the instructions](https://github.com/peter-evans/create-pull-request/blob/main/docs/concepts-guidelines.md#triggering-further-workflow-runs) for how to trigger CI workflows in a PR. This repo uses a custom [GitHub APP](https://github.com/peter-evans/create-pull-request/blob/main/docs/concepts-guidelines.md#authenticating-with-github-app-generated-tokens) to generate a temporary token.
-
-### Checking links
-
-Related files:
-- [linkcheck.yml](.github/workflows/update-manifest.yml)
-
-GitHub actions regularly check if the links are valid.
-
-## Binder docker images
-
-Related files:
-- [binder.yml](.github/workflows/binder.yml) GitHub action
-
-Environment files:
-- [apt.txt](apt.txt) for apt-installed dependencies.
-- [runtime.txt](runtime.txt) and [environment.yml](environment.yml) for Python/conda dependencies.
-- [Project.toml](Project.toml), [Manifest.toml](Manifest.toml), and the [src](src/) folder for Julia dependencies.
-
-This GitHub action builds docker images to run notebooks online on [mybinder](https://mybinder.org/) using [repo2docker](https://repo2docker.readthedocs.io/) and pushs the resulting container to [GitHub container registry (GHCR)][ghcr]. The [.binder/Dockerfile](.binder/Dockerfile) that points to the container will be auto generated.
-
-[ghcr]: https://docs.github.com/en/packages/working-with-a-github-packages-registry/working-with-the-container-registry
