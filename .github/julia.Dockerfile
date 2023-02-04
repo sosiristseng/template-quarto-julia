@@ -9,12 +9,12 @@ ENV PATH ${JULIA_PATH}/bin:${PATH}
 COPY --from=julia:1.8.5 ${JULIA_PATH} ${JULIA_PATH}
 
 # Python dependencies. e.g. matplotlib
-RUN pip install --no-cache-dir matplotlib nbconvert
+RUN pip install --no-cache-dir nbconvert matplotlib
 
 # Julia environment
-COPY Project.toml Manifest.toml .github/install_kernel.jl ./
+COPY Project.toml Manifest.toml ./
 COPY src/ src
-RUN julia --color=yes --project="" install_kernel.jl && \
+RUN julia --color=yes --project="" -e 'import Pkg; Pkg.add("IJulia"); using IJulia; installkernel("Julia", "--project=@.")' && \
     julia --color=yes --project=@. -e 'import Pkg; Pkg.instantiate(); Pkg.resolve(); Pkg.precompile()'
 
 CMD ["julia"]
