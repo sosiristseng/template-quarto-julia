@@ -1,4 +1,4 @@
-# Template publishing Julia-kerneled Jupyter notebooks with Quarto
+# Template publishing Julia notebooks with Quarto
 
 Click `Use this template` button to copy this repository.
 
