@@ -18,7 +18,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v3
       - name: Install mmv
-        run: sudo apt-get update && sudo apt-install -y mmv
+        run: sudo apt-get update && sudo apt-get install -y mmv
       - name: Setup Julia
         uses: julia-actions/setup-julia@v1
         with:
