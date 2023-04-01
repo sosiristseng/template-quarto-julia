@@ -78,9 +78,10 @@ jobs:
           path: docs/
       - name: Copy binder environments
         run: |
-          cp *.toml *.txt _site/
-          cp -R src _site/
-          cp -R docs _site/
+          mkdir -p _site/_sources
+          cp *.toml *.txt _site/_sources
+          cp -R src _site/_sources
+          cp -R docs _site/_sources
       - name: Deploy Notebooks
         if: ${{ github.ref == 'refs/heads/main' }}
         uses: peaceiris/actions-gh-pages@v3
