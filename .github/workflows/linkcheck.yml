@@ -21,8 +21,6 @@ jobs:
         run: sudo apt-get update && sudo apt-get install -y mmv
       - name: Setup Julia
         uses: julia-actions/setup-julia@v1
-        with:
-          version: '1'
       - name: Convert literate notebooks to Markdown
         shell: julia --color=yes {0}
         working-directory: docs/
