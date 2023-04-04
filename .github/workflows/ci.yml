@@ -1,4 +1,4 @@
-name: Jupyter Book Website
+name: Build Website
 
 on:
   push:
@@ -14,7 +14,6 @@ permissions:
   packages: write
   contents: write
   pull-requests: write
-
 
 jobs:
   literate:
@@ -131,10 +130,5 @@ jobs:
         run: |
           mkdir -p .binder
           echo "FROM ${{ env.IMAGE_NAME }}" >> .binder/Dockerfile
-      - name: Git push
-        run: |
-          git config user.name github-actions
-          git config user.email github-actions@github.com
-          git add .
-          git commit -m "Add Dockerfile"
-          git push
+      - name: Push changes
+        uses: stefanzweifel/git-auto-commit-action@v4
