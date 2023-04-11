@@ -78,7 +78,7 @@ jobs:
       - name: Copy binder environments
         run: |
           mkdir -p _site/_sources
-          cp *.toml _site/_sourc
+          cp *.toml _site/_sources
           cp -R src _site/_sources
           cp -R docs _site/_sources
       - name: Deploy Notebooks
