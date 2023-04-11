@@ -1,7 +1,6 @@
 name: Check markdown links
 
 on:
-  repository_dispatch:
   workflow_dispatch:
   schedule:
     - cron: '0 0 1 * *' # Every month
@@ -17,8 +16,6 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v3
-      - name: Install mmv
-        run: sudo apt-get update && sudo apt-get install -y mmv
       - name: Setup Julia
         uses: julia-actions/setup-julia@v1
       - name: Convert literate notebooks to Markdown
@@ -28,14 +25,13 @@ jobs:
           import Pkg
           Pkg.add("Literate")
           using Literate
-          for nb in readdir(pwd())
-              if endswith(nb, ".jl")
-                Literate.markdown(nb; mdstrings=true, flavor = Literate.CommonMarkFlavor())
+          for (root, dirs, files) in walkdir(pwd())
+            for file in files
+              if endswith(file, ".jl")
+                Literate.markdown(joinpath(root, file); mdstrings=true, flavor = Literate.CommonMarkFlavor())
               end
+            end
           end
-      - name: Rename quarto docs to markdown
-        working-directory: docs/
-        run: mmv '*.qmd' '#1.md'
       - name: Restore lychee cache
         uses: actions/cache@v3
         with:
