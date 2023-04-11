@@ -1,6 +1,7 @@
-name: Build Website
+name: Jupyter Book Website
 
 on:
+  workflow_dispatch:
   push:
     branches: [main]
   pull_request:
@@ -16,7 +17,7 @@ permissions:
   pull-requests: write
 
 jobs:
-  literate:
+  jupyter-book:
     runs-on: ubuntu-latest
     env:
       NPROC: '2'
@@ -39,58 +40,33 @@ jobs:
           path: |
             /srv/juliapkgs
           key: ${{ runner.os }}-julia-${{ env.JULIA_CACHE }}-${{ hashFiles('**/Manifest.toml') }}
-          # restore-keys: |
-          #   ${{ runner.os }}-julia-${{ env.JULIA_CACHE }}-
+          restore-keys: |
+            ${{ runner.os }}-julia-${{ env.JULIA_CACHE }}-
       - name: Install Julia dependencies
         env:
           JULIA_PROJECT: ${{ github.workspace }}
-        run: julia --color=yes -e 'import Pkg; Pkg.instantiate(); Pkg.resolve(); Pkg.precompile()'
+        run: julia --color=yes -e 'import Pkg; Pkg.Registry.update(); Pkg.instantiate(); Pkg.resolve(); Pkg.precompile()'
       - name: Build notebooks with ${{ env.NPROC }} processes
         env:
           GKSwstype: 100
           JULIA_PROJECT: ${{ github.workspace }}
         run: julia --color=yes -p ${{ env.NPROC }} literate.jl
-      - name: Upload notebooks
-        uses: actions/upload-artifact@v3
-        with:
-          name: notebooks
-          path: docs/**/*.ipynb
-  quarto:
-    needs: literate
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v3
-      - name: Download artifact
-        uses: actions/download-artifact@v3
-        with:
-          name: notebooks
-          path: out
-      - name: Move notebooks
-        run: mv out/* docs/
-      - name: Setup Quarto
-        uses: quarto-dev/quarto-actions/setup@v2
-      - name: Render Quarto Project
-        uses: quarto-dev/quarto-actions/render@v2
-        with:
-          to: html
-          path: docs/
+      - name: Build website
+        run: jupyter-book build docs/
       - name: Copy binder environments
         run: |
-          mkdir -p _site/_sources
-          cp *.toml *.txt _site/_sources
-          cp -R src _site/_sources
-          cp -R docs _site/_sources
+          cp *.toml docs/_build/html/_sources
+          cp -R src docs/_build/html/_sources
       - name: Deploy Notebooks
         if: ${{ github.ref == 'refs/heads/main' }}
         uses: peaceiris/actions-gh-pages@v3
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: _site/
+          publish_dir: docs/_build/html/
           force_orphan: true
 
   binder:
-    needs: quarto
+    needs: jupyter-book
     if: ${{ github.ref == 'refs/heads/main' }}
     runs-on: ubuntu-latest
     env:
