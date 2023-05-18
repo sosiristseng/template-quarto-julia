@@ -3,7 +3,7 @@ project:
   output-dir: ../_site
 
 website:
-  title: "Julia and Quarto Website Template"
+  title: "Julia and Quarto Template"
   navbar:
     search: true
     left:
