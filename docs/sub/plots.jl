@@ -1,5 +1,5 @@
 #===
-# Plotting (subfolder)
+# Plotting
 
 Using [PyPlot.jl](https://github.com/JuliaPy/PyPlot.jl) since this package is tricky to install and load.
 ===#
