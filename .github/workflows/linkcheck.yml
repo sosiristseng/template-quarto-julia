@@ -8,7 +8,11 @@ on:
     branches:
       - main
     paths:
+      - 'docs/**'
       - '.github/workflows/linkcheck.yml'
+
+env:
+  DIR: "docs"
 
 jobs:
   linkcheck:
@@ -20,7 +24,7 @@ jobs:
         uses: julia-actions/setup-julia@v1
       - name: Convert literate notebooks to Markdown
         shell: julia --color=yes {0}
-        working-directory: docs/
+        working-directory: ${{ env.DIR }}
         run: |
           import Pkg
           Pkg.add("Literate")
@@ -33,22 +37,23 @@ jobs:
             end
           end
       - name: Restore lychee cache
-        uses: actions/cache@v3
+        id: restore-cache
+        uses: actions/cache/restore@v3
         with:
           path: .lycheecache
           key: cache-lychee-${{ github.sha }}
           restore-keys: cache-lychee-
-      - name: Link Checker
-        uses: lycheeverse/lychee-action@v1.7.0
+      - name: Lychee Checker
+        uses: lycheeverse/lychee-action@v1.8.0
         id: lychee
         with:
-          args: '--accept 200,204,429 --verbose --no-progress --cache --max-cache-age 1d docs/'
+          fail: true
+          args: '--accept 200,204,429 --verbose --no-progress --cache --max-cache-age 1d ${{ env.DIR }}'
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      - name: Create Issue From File
-        if: ${{ env.lychee_exit_code != 0 }}
-        uses: peter-evans/create-issue-from-file@v4
+      - name: Save lychee cache
+        uses: actions/cache/save@v3
+        if: always()
         with:
-          title: Link Checker Report
-          content-filepath: ./lychee/out.md
-          labels: lychee
+          path: .lycheecache
+          key: ${{ steps.restore-cache.outputs.cache-primary-key }}

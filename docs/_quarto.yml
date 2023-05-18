@@ -11,6 +11,7 @@ website:
         text: Home
       - about.qmd
       - plots.ipynb
+      - sub/plots.ipynb
 
 format:
   html:
