@@ -22,7 +22,7 @@ jobs:
       JULIA_NUM_THREADS: 'auto'
       JULIA_CONDAPKG_BACKEND: 'Null'
     container:
-      image: python:3.11.3-slim
+      image: python:3.11.4-slim
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
