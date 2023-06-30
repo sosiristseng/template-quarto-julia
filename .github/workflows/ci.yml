@@ -81,7 +81,7 @@ jobs:
         run: ls -R
         working-directory: out
       - name: Copy back built notebooks
-        run: cp --verbose -rf out/docs/* docs/
+        run: cp --verbose -rf out/* docs/
       - name: Setup Quarto
         uses: quarto-dev/quarto-actions/setup@v2
       - name: Render Quarto Project
