@@ -1,4 +1,4 @@
-FROM ghcr.io/sosiristseng/docker-jupyterbook:latest as base
+FROM python:3.11.4-slim as base
 
 # Julia config
 ENV JULIA_CI true
