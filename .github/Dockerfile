@@ -1,3 +1,4 @@
+FROM julia:1.9.3 as julia
 FROM python:3.11.5-slim as base
 
 # Julia config
@@ -7,11 +8,11 @@ ENV JULIA_NUM_THREADS "auto"
 ENV JULIA_CONDAPKG_BACKEND "Null"
 # Headless Plots.jl
 ENV GKSwstype 100
-ENV JULIA_CPU_TARGET "generic"
+ENV JULIA_CPU_TARGET "generic;haswell,clone_all"
 ENV JULIA_PATH /usr/local/julia/
 ENV JULIA_DEPOT_PATH /srv/juliapkg/
 ENV PATH ${JULIA_PATH}/bin:${PATH}
-COPY --from=julia:1.9.3 ${JULIA_PATH} ${JULIA_PATH}
+COPY --from=julia ${JULIA_PATH} ${JULIA_PATH}
 
 FROM base
 
