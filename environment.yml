@@ -2,6 +2,7 @@ name: ci
 
 dependencies:
   - python>=3.11
+  - quarto
   # PythonPlot
   - matplotlib
   - libstdcxx-ng<13.0
