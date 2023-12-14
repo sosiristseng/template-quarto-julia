@@ -10,8 +10,8 @@ website:
       - href: index.qmd
         text: Home
       - about.qmd
-      - plots.md
-      - sub/plotsjl.md
+      - plots.ipynb
+      - sub/plotsjl.ipynb
 
 format:
   html:
