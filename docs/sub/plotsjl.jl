@@ -1,15 +1,16 @@
 #===
-# Plotting
+# Plotting by Plots.jl
+
 ===#
 
-import PythonPlot as plt
+using Plots
 using Random
 Random.seed!(2022)
 
 #---
 
-plt.plot(1:5, rand(1:6, 5))
-plt.gcf()
+fig = plot(1:5, rand(1:6, 5))
+display("image/png", fig)
 
 # ## Runtime information
 

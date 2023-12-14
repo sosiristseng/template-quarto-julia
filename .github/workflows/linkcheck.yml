@@ -49,7 +49,7 @@ jobs:
         id: lychee
         with:
           fail: true
-          args: --accept 200,204,429 --verbose --no-progress --cache --max-cache-age 1d "${{env.DIR}}/**/*.md" "${{env.DIR}}/**/*.qmd"
+          args: --accept 200,204,429 --verbose --no-progress --cache --max-cache-age 1d "${{ env.DIR }}/**/*.md" "${{ env.DIR }}/**/*.qmd"
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: Save lychee cache

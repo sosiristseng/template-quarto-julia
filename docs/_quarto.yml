@@ -11,7 +11,7 @@ website:
         text: Home
       - about.qmd
       - plots.md
-      - sub/plots.md
+      - sub/plotsjl.md
 
 format:
   html:
