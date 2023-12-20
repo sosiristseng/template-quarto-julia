@@ -85,7 +85,7 @@ jobs:
         to: html # If set, it will be equivalent to `quarto render --to html`
         path: docs # By default, the current working dir is used i.e `quarto render .`
     - name: Upload pages artifact
-      uses: actions/upload-pages-artifact@v2
+      uses: actions/upload-pages-artifact@v3
       if: ${{ github.ref == 'refs/heads/main' }}
       with:
         path: _site/
