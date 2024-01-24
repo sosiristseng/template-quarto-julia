@@ -3,18 +3,20 @@ project:
   output-dir: ../_site
 
 website:
-  title: "Julia and Quarto Template"
+  title: "Quarto Julia Template"
+  page-navigation: true
+  back-to-top-navigation: true
   navbar:
     search: true
-    left:
-      - href: index.qmd
-        text: Home
-      - about.qmd
-      - plots.ipynb
-      - sub/plotsjl.ipynb
+  sidebar:
+    style: "docked"
+    contents: auto
 
 format:
   html:
-    theme: flatly
+    theme:
+      light: flatly
+      dark: darkly
     css: styles.css
     toc: true
+    html-math-method: mathjax
