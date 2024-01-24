@@ -6,7 +6,6 @@ website:
   title: "Quarto Julia Template"
   repo-url: https://github.com/sosiristseng/template-quarto-literate
   page-navigation: true
-  bread-crumbs: true
   back-to-top-navigation: true
   navbar:
     search: true
