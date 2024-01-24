@@ -16,7 +16,7 @@ format:
   html:
     theme:
       light: cosmo
-      dark: darkly
+      dark: slate
     grid:
       sidebar-width: 350px
     toc: true
