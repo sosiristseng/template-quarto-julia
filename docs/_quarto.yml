@@ -4,10 +4,16 @@ project:
 
 website:
   title: "Quarto Julia Template"
+  repo-url: https://github.com/sosiristseng/template-quarto-literate
   page-navigation: true
+  bread-crumbs: true
   back-to-top-navigation: true
   navbar:
     search: true
+    tools:
+      - icon: github
+        href: https://github.com/sosiristseng/template-quarto-literate
+        text: GitHub repo
   sidebar:
     style: "docked"
     contents: auto
@@ -20,4 +26,3 @@ format:
     grid:
       sidebar-width: 350px
     toc: true
-    html-math-method: mathjax
