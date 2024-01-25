@@ -55,10 +55,16 @@ jobs:
       if: ${{ steps.cache-julia.outputs.cache-hit != 'true' }}
       env:
         PYTHON: ${{ env.pythonLocation }}/python
+      shell: julia --color=yes {0}
       run: |
-        julia --project=@. --color=yes -e 'using Pkg, Dates; Pkg.instantiate(); Pkg.precompile(); Pkg.gc(collect_delay=Day(0))'
-    - name: Run program
-      run: julia --project=@. --color=yes -p ${{ env.NPROC }} literate.jl
+        using Pkg, Dates
+        Pkg.add(["PrettyTables", "Literate"])
+        Pkg.activate(".")
+        Pkg.instantiate()
+        Pkg.precompile()
+        Pkg.gc(collect_delay=Day(0))
+    - name: Run notebooks
+      run: julia --color=yes -p ${{ env.NPROC }} literate.jl
     - name: Setup Quarto
       uses: quarto-dev/quarto-actions/setup@v2
     - name: Render Quarto Project
