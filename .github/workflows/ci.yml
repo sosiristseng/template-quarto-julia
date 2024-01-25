@@ -41,7 +41,7 @@ jobs:
       run: pip install -r requirements.txt
     - name: Read Julia version
       id: read_toml
-      run: echo "value=$(python read_toml.py)" >> "$GITHUB_OUTPUT"
+      run: echo "value=$(python .github/read_toml.py)" >> "$GITHUB_OUTPUT"
     - name: Setup Julia
       uses: julia-actions/setup-julia@v1
       with:
