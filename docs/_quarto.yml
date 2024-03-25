@@ -18,14 +18,10 @@ website:
     contents:
       - index.qmd
       - about.qmd
-      - section: "Literate"
+      - "*.ipynb"
+      - section: "Sub"
         contents:
-          - pythonplot.ipynb
-          - sub/plots-lit.ipynb
-      - section: "Jupyter Notebooks"
-        contents:
-          - plots.ipynb
-          - sub/plots.ipynb
+          - "sub/*.ipynb"
 
 format:
   html:
