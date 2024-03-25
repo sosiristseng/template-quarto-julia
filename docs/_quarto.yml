@@ -4,18 +4,28 @@ project:
 
 website:
   title: "Quarto Julia Template"
-  repo-url: https://github.com/sosiristseng/template-quarto-literate
+  repo-url: https://github.com/sosiristseng/template-quarto-julia
   page-navigation: true
   back-to-top-navigation: true
   navbar:
     search: true
     tools:
       - icon: github
-        href: https://github.com/sosiristseng/template-quarto-literate
+        href: https://github.com/sosiristseng/template-quarto-julia
         text: GitHub repo
   sidebar:
     style: "docked"
-    contents: auto
+    contents:
+      - index.qmd
+      - about.qmd
+      - section: "Literate"
+        contents:
+          - pythonplot.ipynb
+          - sub/plots-lit.ipynb
+      - section: "Jupyter Notebooks"
+        contents:
+          - plots.ipynb
+          - sub/plots.ipynb
 
 format:
   html:
