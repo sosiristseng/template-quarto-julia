@@ -15,13 +15,7 @@ website:
         text: GitHub repo
   sidebar:
     style: "docked"
-    contents:
-      - index.qmd
-      - about.qmd
-      - auto: "*.ipynb"
-      - section: "Sub"
-        contents:
-          - "sub/*.ipynb"
+    contents: auto
 
 format:
   html:
