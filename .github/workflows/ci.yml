@@ -84,6 +84,8 @@ jobs:
       run: julia --color=yes -p ${{ env.LITERATE_PROC }} --heap-size-hint=4G run.jl
     - name: Copy back built notebooks
       run: cp --verbose -rf ${{ env.NBCACHE }}/docs/* docs/
+    - name: Remove jl files
+      run: find docs/ -type f -name "*.jl" -exec rm {} \;
     - name: Setup Quarto
       uses: quarto-dev/quarto-actions/setup@v2
     - name: Render Quarto Project
