@@ -23,9 +23,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@692973e3d937129bcbf40652eb9f2f61becf3332 # v4
+        uses: actions/checkout@v4
       - name: Setup Julia
-        uses: julia-actions/setup-julia@81d42b556a18b0d67455a742fcbffdeb49b3ffb0 # v2
+        uses: julia-actions/setup-julia@v2
       - name: Convert literate notebooks to markdown files
         shell: julia --color=yes {0}
         working-directory: ${{ env.DIR }}
@@ -42,12 +42,12 @@ jobs:
             end
           end
       - name: Setup Python
-        uses: actions/setup-python@82c7e631bb3cdc910f68e0081d67478d79c6982d # v5
+        uses: actions/setup-python@v5
         id: setup-python
         with:
           python-version: '3.x'
       - name: Cache python
-        uses: actions/cache@0c45773b623bea8c8e75f6c82b208c3cf94ea4f9 # v4
+        uses: actions/cache@v4
         id: cache-py
         with:
           key: ${{ runner.os }}-py-${{ steps.setup-python.outputs.python-version }}-${{ hashFiles('requirements.txt') }}
@@ -61,14 +61,14 @@ jobs:
           parallel -j2 jupyter nbconvert --to markdown {}
       - name: Lychee cache
         id: restore-cache
-        uses: actions/cache@0c45773b623bea8c8e75f6c82b208c3cf94ea4f9 # v4
+        uses: actions/cache@v4
         with:
           save-always: 'true'
           path: .lycheecache
           key: cache-lychee-${{ github.sha }}
           restore-keys: cache-lychee-
       - name: Lychee link check
-        uses: lycheeverse/lychee-action@2b973e86fc7b1f6b36a93795fe2c9c6ae1118621 # v1.10.0
+        uses: lycheeverse/lychee-action@v1.10.0
         id: lychee
         with:
           fail: true
