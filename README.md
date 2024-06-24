@@ -21,9 +21,9 @@ You need to enable GitHub actions by selecting repository settings -> actions ->
 
 ## Automatic dependency updates
 
-### Renovate Bot and Kodiak Bot
+### Dependabot and Kodiak Bot
 
-- [renovate.json](.github/renovate.json)
+- [dependabot.yml](.github/dependabot.yml)
 - [.kodiak.toml](.github/.kodiak.toml)
 
 This repository uses Dependabot to automatically update Julia, Python, and GitHub actions. [Kodiak bot](https://kodiakhq.com/) automates dependabot's pull requests. You need to add `automerge` issue label as well as enable [Kodiak bot](https://kodiakhq.com/).
@@ -32,6 +32,6 @@ This repository uses Dependabot to automatically update Julia, Python, and GitHu
 
 - [update-manifest.yml](.github/workflows/update-manifest.yml)
 
-GitHub actions periodically update Julia dependencies and make a PR if the notebooks are executed successfully with the updated packages.
+GitHub acttions periodically update Julia dependencies and make a PR if the notebooks are executed successfully with the updated packages.
 
 [See the instructions](https://github.com/peter-evans/create-pull-request/blob/main/docs/concepts-guidelines.md#triggering-further-workflow-runs) for how to trigger CI workflows in a PR. This repo uses a custom [GitHub APP](https://github.com/peter-evans/create-pull-request/blob/main/docs/concepts-guidelines.md#authenticating-with-github-app-generated-tokens) to generate a temporary token.
