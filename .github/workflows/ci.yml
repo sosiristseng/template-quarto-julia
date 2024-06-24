@@ -62,11 +62,11 @@ jobs:
         file: 'Manifest.toml'
         field: 'julia_version'
     - name: Setup Julia
-      uses: julia-actions/setup-julia@8v2
+      uses: julia-actions/setup-julia@v2
       with:
         version: ${{ steps.read_toml.outputs.value }}
     - name: Restore Julia packages
-      uses: actions/cache/restore@0v4
+      uses: actions/cache/restore@v4
       if: ${{ contains(runner.name, 'GitHub Actions') }}
       id: cache-julia
       with:
