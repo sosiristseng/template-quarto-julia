@@ -46,15 +46,8 @@ jobs:
         id: setup-python
         with:
           python-version: '3.x'
-      - name: Cache python
-        uses: actions/cache@v4
-        id: cache-py
-        with:
-          key: ${{ runner.os }}-py-${{ steps.setup-python.outputs.python-version }}-${{ hashFiles('requirements.txt') }}
-          path: ${{ env.pythonLocation }}
       - name: Install Python dependencies
-        if: ${{ steps.cache-py.outputs.cache-hit != 'true' }}
-        run: pip install -r requirements.txt
+        run: pip install nbconvert
       - name: Convert ipynb files to markdown
         run: >
           find ${{ env.DIR }} -type f -name '*.ipynb' |
