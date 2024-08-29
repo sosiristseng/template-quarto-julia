@@ -92,10 +92,7 @@ jobs:
     - name: Setup Quarto
       uses: quarto-dev/quarto-actions/setup@v2
     - name: Render Quarto Project
-      uses: quarto-dev/quarto-actions/render@v2
-      with:
-        to: html # If set, it will be equivalent to `quarto render --to html`
-        path: docs # By default, the current working dir is used i.e `quarto render .`
+      run: quarto render docs --to html
     - name: Upload pages artifact
       uses: actions/upload-pages-artifact@v3
       if: ${{ github.ref == 'refs/heads/main' }}
