@@ -6,7 +6,6 @@ using IJulia
 @everywhere begin
     ENV["GKSwstype"] = "100"
     using Literate, Pkg, JSON
-    Pkg.activate(Base.current_project())
 end
 
 # Strip SVG output from a Jupyter notebook
@@ -60,10 +59,8 @@ function list_notebooks(basedir, cachedir)
                 shaval = read(nb, String) |> sha256 |> bytes2hex
                 @info "Notebook $(nb): hash=$(shaval)"
                 shafilename = joinpath(cachedir, root, splitext(file)[1] * ".sha")
-                # Cache hit
                 if isfile(shafilename) && read(shafilename, String) == shaval
                     @info "Notebook $(nb) cache hits and will not be executed."
-                    # Cache miss
                 else
                     @info "Notebook $(nb) cache misses. Writing hash to $(shafilename)."
                     mkpath(dirname(shafilename))
@@ -77,7 +74,7 @@ function list_notebooks(basedir, cachedir)
             end
         end
     end
-    return (;ipynbs, litnbs)
+    return (; ipynbs, litnbs)
 end
 
 @everywhere function run_literate(file, cachedir; rmsvg=true)
@@ -90,22 +87,19 @@ end
 
 function main(;
     basedir=get(ENV, "DOCDIR", "docs"),
-    cachedir=get(ENV, "NBCACHE", ".cache"), printtable=true,
-    rmsvg=true
-    )
+    cachedir=get(ENV, "NBCACHE", ".cache"),
+    printtable=true, rmsvg=true)
 
     mkpath(cachedir)
     clean_cache(cachedir)
 
-    (;ipynbs, litnbs) = list_notebooks(basedir, cachedir)
+    (; ipynbs, litnbs) = list_notebooks(basedir, cachedir)
 
     # Execute literate notebooks in worker process(es)
     ts_lit = pmap(litnbs; on_error=ex -> NaN) do nb
         @elapsed run_literate(nb, cachedir; rmsvg)
     end
-
-    # Remove worker processes to release some memory
-    rmprocs(workers())
+    rmprocs(workers()) # Remove worker processes to release some memory
 
     # Debug notebooks one by one if there are errors
     for (nb, t) in zip(litnbs, ts_lit)
