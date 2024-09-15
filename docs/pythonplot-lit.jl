@@ -1,22 +1,21 @@
 #===
-# Plotting by Plots.jl
+# Plotting with PythonPlot.jl
 
+Using Literate.jl
 ===#
-
-using Plots
+import PythonPlot as plt
 using Random
 Random.seed!(2022)
 
 #---
-
-plot(rand(1:6, 5))
+plt.figure()
+plt.plot(1:5, rand(1:6, 5))
+plt.gcf()
 
 # ## Runtime information
-
 import Pkg
 Pkg.status()
 
 #---
-
 import InteractiveUtils
 InteractiveUtils.versioninfo()
