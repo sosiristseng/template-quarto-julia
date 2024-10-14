@@ -64,7 +64,7 @@ jobs:
           key: cache-lychee-${{ github.sha }}
           restore-keys: cache-lychee-
       - name: Lychee link check
-        uses: lycheeverse/lychee-action@v2.0.0
+        uses: lycheeverse/lychee-action@v2.0.2
         id: lychee
         with:
           fail: true
