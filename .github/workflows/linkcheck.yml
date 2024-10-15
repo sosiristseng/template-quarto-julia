@@ -20,7 +20,6 @@ jobs:
   linkcheck:
     env:
       DIR: 'docs'
-      UV_SYSTEM_PYTHON: 1
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -48,18 +47,17 @@ jobs:
         with:
           python-version: '3.x'
       - name: Install uv
-        run: curl -LsSf https://astral.sh/uv/install.sh | sh
+        run: pip install uv
       - name: Install Python dependencies
-        run: uv pip install nbconvert
+        run: uv pip install --system nbconvert
       - name: Convert ipynb files to markdown
         run: >
           find ${{ env.DIR }} -type f -name '*.ipynb' |
           parallel -j2 jupyter nbconvert --to markdown {}
-      - name: Lychee cache
+      - name: Restore lychee cache
         id: restore-cache
-        uses: actions/cache@v4
+        uses: actions/cache/restore@v4
         with:
-          save-always: 'true'
           path: .lycheecache
           key: cache-lychee-${{ github.sha }}
           restore-keys: cache-lychee-
@@ -67,7 +65,20 @@ jobs:
         uses: lycheeverse/lychee-action@v2.0.2
         id: lychee
         with:
-          fail: true
+          fail: false
           args: --accept 200,204,429 --verbose --no-progress --cache --max-cache-age 1d "${{ env.DIR }}/**/*.md" "${{ env.DIR }}/**/*.qmd"
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Save lychee cache
+        uses: actions/cache/save@v4
+        if: always()
+        with:
+          path: .lycheecache
+          key: ${{ steps.restore-cache.outputs.cache-primary-key }}
+      - name: Create Issue From File
+        if: env.exit_code != 0
+        uses: peter-evans/create-issue-from-file@v5
+        with:
+          title: Link Checker Report
+          content-filepath: ./lychee/out.md
+          labels: 'automated issue'
