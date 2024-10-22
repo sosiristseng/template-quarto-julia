@@ -9,7 +9,6 @@ on:
       - main
     paths:
       - 'docs/**'
-      - '.lycheeignore'
       - '.github/workflows/linkcheck.yml'
 
 concurrency:
@@ -26,7 +25,7 @@ jobs:
         uses: actions/checkout@v4
       - name: Setup Julia
         uses: julia-actions/setup-julia@v2
-      - name: Convert literate notebooks to markdown files
+      - name: Convert literate notebooks to ipynb files
         shell: julia --color=yes {0}
         working-directory: ${{ env.DIR }}
         run: |
@@ -37,7 +36,7 @@ jobs:
             for file in files
               if endswith(file, ".jl")
                 nb = joinpath(root, file)
-                Literate.markdown(nb, dirname(nb); mdstrings=true, flavor=Literate.CommonMarkFlavor())
+                Literate.notebook(nb, dirname(nb); mdstrings=true, execute=false)
               end
             end
           end
@@ -46,39 +45,9 @@ jobs:
         id: setup-python
         with:
           python-version: '3.x'
-      - name: Install uv
-        run: pip install uv
       - name: Install Python dependencies
-        run: uv pip install --system nbconvert
-      - name: Convert ipynb files to markdown
-        run: >
-          find ${{ env.DIR }} -type f -name '*.ipynb' |
-          parallel -j2 jupyter nbconvert --to markdown {}
-      - name: Restore lychee cache
-        id: restore-cache
-        uses: actions/cache/restore@v4
-        with:
-          path: .lycheecache
-          key: cache-lychee-${{ github.sha }}
-          restore-keys: cache-lychee-
-      - name: Lychee link check
-        uses: lycheeverse/lychee-action@v2.0.2
-        id: lychee
-        with:
-          fail: false
-          args: --accept 200,204,429 --verbose --no-progress --cache --max-cache-age 1d "${{ env.DIR }}/**/*.md" "${{ env.DIR }}/**/*.qmd"
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      - name: Save lychee cache
-        uses: actions/cache/save@v4
-        if: always()
-        with:
-          path: .lycheecache
-          key: ${{ steps.restore-cache.outputs.cache-primary-key }}
-      - name: Create Issue From File
-        if: env.exit_code != 0
-        uses: peter-evans/create-issue-from-file@v5
-        with:
-          title: Link Checker Report
-          content-filepath: ./lychee/out.md
-          labels: 'automated issue'
+        run: |
+          pip install uv
+          uv pip install --system -r requirements.txt
+      - name: Build website
+        run: jupyter-book build ${DIR} --builder linkcheck
