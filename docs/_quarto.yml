@@ -1,9 +1,11 @@
+# https://quarto.org/docs/projects/quarto-projects.html
 project:
   type: website
   output-dir: ../_site
 
+# https://quarto.org/docs/websites/#config-file
 website:
-  title: "Quarto Julia Template"
+  title: Quarto Julia Template
   repo-url: https://github.com/sosiristseng/template-quarto-julia
   page-navigation: true
   back-to-top-navigation: true
@@ -14,14 +16,16 @@ website:
         href: https://github.com/sosiristseng/template-quarto-julia
         text: GitHub repo
   sidebar:
-    style: "docked"
+    style: docked
     contents: auto
 
+# https://quarto.org/docs/output-formats/html-basics.html
 format:
   html:
     theme:
-      light: cosmo
-      dark: slate
+      light: flatly
+      dark: darkly
     grid:
       sidebar-width: 350px
     toc: true
+    css: styles.css
