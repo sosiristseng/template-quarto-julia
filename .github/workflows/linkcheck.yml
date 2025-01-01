@@ -53,7 +53,7 @@ jobs:
       - name: Convert ipynb files to markdown
         run: >
           find ${{ env.DIR }} -type f -name '*.ipynb' |
-          parallel -j2 jupyter nbconvert --to markdown {}
+          parallel jupyter nbconvert --to markdown {}
       - name: Restore lychee cache
         id: restore-cache
         uses: actions/cache/restore@v4
@@ -65,13 +65,18 @@ jobs:
         uses: lycheeverse/lychee-action@v2.2.0
         id: lychee
         with:
-          fail: true
-          jobSummary: true
-          format: markdown
+          fail: false
+          failIfEmpty: false
           args: --accept 200,204,429 --verbose --no-progress --cache --max-cache-age 1d "${{ env.DIR }}/**/*.md" "${{ env.DIR }}/**/*.qmd"
-
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Create Issue From File
+        if: steps.lychee.outputs.exit_code != 0
+        uses: peter-evans/create-issue-from-file@v5
+        with:
+          title: Link Checker Report
+          content-filepath: ./lychee/out.md
+          labels: report
       - name: Save lychee cache
         uses: actions/cache/save@v4
         if: always()
