@@ -99,7 +99,7 @@ jobs:
     - name: Render Quarto Project
       run: quarto render docs --to html
     - name: Upload pages artifact
-      uses: actions/upload-pages-artifact@v3
+      uses: actions/upload-pages-artifact@v4
       if: ${{ github.ref == 'refs/heads/main' }}
       with:
         path: _site/
