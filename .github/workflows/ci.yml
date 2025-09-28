@@ -17,8 +17,10 @@ env:
   JULIA_NUM_THREADS: '2'
   ALLOWERRORS: 'false'
   JULIA_CONDAPKG_BACKEND: 'Null'
+  JULIA_CONDAPKG_OFFLINE: 'true'
   JULIA_CI: 'true'
   NBCACHE: '.cache'
+  UV_SYSTEM_PYTHON: 1
 
 jobs:
   CI:
@@ -31,13 +33,16 @@ jobs:
       id: setup-python
       with:
         python-version: '3.x'
+        check-latest: true
+    - name: Install the latest version of uv
+      uses: astral-sh/setup-uv@v6
+      with:
+        version: "latest"
     - name: Install Python dependencies
-      run: |
-        pip install uv
-        uv pip install --system -r requirements.txt
+      run: uv pip install -r requirements.txt
     - name: Read Julia version
       id: read_toml
-      run: echo value=$(python -c 'import tomllib; from pathlib import Path; print(tomllib.loads(Path("Manifest.toml").read_text())["julia_version"])') >> "$GITHUB_OUTPUT"
+      run: echo value=$(python -c 'import tomllib; from pathlib import Path; print(tomllib.loads(Path("Manifest.toml").read_text())["julia_version"], sep="")') >> "$GITHUB_OUTPUT"
     - name: Get environment hash
       id: hash
       run: |
@@ -71,7 +76,7 @@ jobs:
       shell: julia --color=yes {0}
       run: |
         using Pkg
-        Pkg.add(["IJulia", "Literate", "PrettyTables", "JSON"])
+        Pkg.add(["IJulia", "Literate", "Tables", "MarkdownTables", "JSON"])
         Pkg.activate(".")
         Pkg.instantiate()
         Pkg.precompile()
@@ -89,11 +94,11 @@ jobs:
         key: ${{ steps.cache-julia.outputs.cache-primary-key }}
     - name: Run notebooks
       if: ${{ steps.cache-nb.outputs.cache-hit != 'true' }}
-      run: julia --project=@. --color=yes -p ${{ env.LITERATE_PROC }} ci.jl
+      run: julia --project=@. --color=yes -p ${{ env.LITERATE_PROC }} .github/ci.jl
     - name: Copy back built notebooks
       run: cp --verbose -rf ${{ env.NBCACHE }}/docs/* docs/
-    - name: Remove confusion of jupytext jl files
-      run: find docs/ -type f -name "*.jl" -exec rm {} \;
+    - name: Remove jl files to avoid confusion with jupytext
+      run: find docs/ -type f -name "*.jl" -delete
     - name: Setup Quarto
       uses: quarto-dev/quarto-actions/setup@v2
     - name: Render Quarto Project
