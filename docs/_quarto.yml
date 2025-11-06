@@ -4,6 +4,7 @@ project:
   output-dir: ../_site
 
 # https://quarto.org/docs/websites/#config-file
+# https://quarto.org/docs/reference/projects/websites.html
 website:
   title: Quarto Julia Template
   repo-url: https://github.com/sosiristseng/template-quarto-julia
@@ -29,3 +30,11 @@ format:
       sidebar-width: 350px
     toc: true
     css: styles.css
+
+# Default options
+notebook-links: true
+
+# Execution
+execute:
+  cache: true
+engines: ['julia']

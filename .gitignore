@@ -118,9 +118,7 @@ venv.bak/
 # Rope project settings
 .ropeproject
 
-# mkdocs documentation
-/site
-/public
+
 
 # mypy
 .mypy_cache/
@@ -161,3 +159,12 @@ docs/site/
 # environment.
 # Manifest.toml
 LocalPreferences.toml
+
+# Oupput
+/site
+/public
+
+# Quarto
+_site/
+**/.quarto/
+**/*.quarto_ipynb
