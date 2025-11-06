@@ -25,7 +25,3 @@ plot(sin,
      leg=false,
      fill=(0,:lavender))
 ```
-
-```{julia}
-1+1
-```
