@@ -1,0 +1,31 @@
+---
+title: "Plots Demo"
+author: "Author"
+date: last-modified
+date-format: iso
+format:
+  html:
+    code-fold: true
+---
+
+## Parametric Plots
+
+Plot function pair `(x(u), y(u))`. See @fig-parametric for an example.
+
+```{julia}
+#| label: fig-parametric
+#| fig-cap: "Parametric Plots"
+
+using Plots
+
+plot(sin,
+     x->sin(2x),
+     0,
+     2π,
+     leg=false,
+     fill=(0,:lavender))
+```
+
+```{julia}
+1+1
+```

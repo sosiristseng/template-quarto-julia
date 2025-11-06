@@ -12,12 +12,10 @@ concurrency:
   cancel-in-progress: true
 
 env:
-  LITERATE_PROC: '2'
-  JULIA_NUM_THREADS: '2'
+  JULIA_NUM_THREADS: 'auto'
   JULIA_CONDAPKG_BACKEND: 'Null'
   JULIA_CONDAPKG_OFFLINE: 'true'
   JULIA_CI: 'true'
-  NBCACHE: '.cache'
   UV_SYSTEM_PYTHON: 1
 
 jobs:
@@ -33,8 +31,6 @@ jobs:
         python-version: '3.13'
     - name: Setup uv
       uses: astral-sh/setup-uv@v7
-      with:
-        enable-cache: true
     - name: Install Python dependencies
       run: uv pip install -r requirements.txt
     - name: Read Julia version
@@ -45,23 +41,19 @@ jobs:
       run: |
         echo "value=${{ hashFiles('Project.toml', 'Manifest.toml', 'src/**') }}" >> "$GITHUB_OUTPUT"
         echo "ver=${{ runner.os }}-julia-${{ steps.julia-version.outputs.resolved }}" >> "$GITHUB_OUTPUT"
-    - name: Cache executed notebooks
+    - name: Cache notebook execution
       uses: actions/cache@v4
       id: cache-nb
       with:
-        path: |
-          ${{ env.NBCACHE }}/**/*.ipynb
-          ${{ env.NBCACHE }}/**/*.sha
-        key: notebook-${{ steps.hash.outputs.value }}-${{ hashFiles('docs/**/*.ipynb', 'docs/**/*.jl') }}
-        restore-keys: |
-          notebook-${{ steps.hash.outputs.value }}-
+        path: docs/.cache
+        key: notebook-${{ steps.hash.outputs.value }}
     - name: Setup Julia
       uses: julia-actions/setup-julia@v2
       with:
         version: ${{ steps.julia-version.outputs.resolved }}
     - name: Restore Julia packages
       uses: actions/cache/restore@v4
-      if: ${{ runner.environment == 'github-hosted'}}
+      if: ${{ runner.environment == 'github-hosted' }}
       id: cache-julia
       with:
         path: ~/.julia
@@ -70,11 +62,9 @@ jobs:
           ${{ steps.hash.outputs.ver }}-
     - name: Install Julia packages
       if: ${{ runner.environment == 'self-hosted' || steps.cache-julia.outputs.cache-hit != 'true' }}
-      shell: julia --color=yes {0}
+      shell: julia --color=yes --project=@. {0}
       run: |
         using Pkg
-        Pkg.add(["Literate", "JSON", "Tables", "MarkdownTables", "SHA"])
-        Pkg.activate(".")
         Pkg.instantiate()
         Pkg.precompile()
     - name: Clean Julia package directory
@@ -89,15 +79,10 @@ jobs:
       with:
         path: ~/.julia
         key: ${{ steps.cache-julia.outputs.cache-primary-key }}
-    - name: Run notebooks
-      if: ${{ steps.cache-nb.outputs.cache-hit != 'true' }}
-      run: julia --project=@. --color=yes -p ${{ env.LITERATE_PROC }} .github/ci.jl
-    - name: Remove jl files to avoid confusion with jupytext
-      run: find docs/ -type f -name "*.jl" -delete
     - name: Setup Quarto
       uses: quarto-dev/quarto-actions/setup@v2
     - name: Render Quarto Project
-      run: quarto render docs --to html
+      run: quarto render docs/ --to html
     - name: Upload pages artifact
       uses: actions/upload-pages-artifact@v4
       if: ${{ github.ref == 'refs/heads/main' }}
