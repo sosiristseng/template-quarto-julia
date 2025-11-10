@@ -65,6 +65,7 @@ jobs:
       shell: julia --color=yes --project=@. {0}
       run: |
         using Pkg
+        Pkg.resolve()
         Pkg.instantiate()
         Pkg.precompile()
     - name: Clean Julia package directory
