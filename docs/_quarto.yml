@@ -2,8 +2,6 @@
 project:
   type: website
   output-dir: ../_site
-  render:
-    - "!*.jl"
 
 # https://quarto.org/docs/websites/#config-file
 # https://quarto.org/docs/reference/projects/websites.html
