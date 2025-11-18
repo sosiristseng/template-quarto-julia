@@ -127,7 +127,6 @@ function main(;
         ts_lit = pmap(litnbs; on_error=identity) do nb
             @elapsed run_literate(nb, cachedir; rmsvg)
         end
-        rmprocs(workers()) # Remove worker processes to release some memory
         failed = false
         for (nb, t) in zip(litnbs, ts_lit)
             if t isa ErrorException
@@ -138,13 +137,11 @@ function main(;
 
         if failed
             error("Please check literate notebook error(s).")
+        else
+            # Print execution result
+            Tables.table([litnbs ts_lit]; header=["Notebook", "Elapsed (s)"]) |> markdown_table(String) |> print
         end
-    else
-        ts_lit = []
     end
-
-    # Print execution result
-    Tables.table([litnbs ts_lit]; header=["Notebook", "Elapsed (s)"]) |> markdown_table(String) |> print
 end
 
 # Run code
