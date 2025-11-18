@@ -16,7 +16,7 @@ env:
   JULIA_CONDAPKG_BACKEND: 'Null'
   JULIA_CONDAPKG_OFFLINE: 'true'
   JULIA_CI: 'true'
-  UV_SYSTEM_PYTHON: 1
+  NBCACHE: '.cache'
 
 jobs:
   CI:
@@ -28,20 +28,18 @@ jobs:
       uses: actions/setup-python@v6
       id: setup-python
       with:
-        python-version: '3.13'
-    - name: Setup uv
-      uses: astral-sh/setup-uv@v7
+        python-version: '3.14'
     - name: Install Python dependencies
-      run: uv pip install -r requirements.txt
+      run: pip install -r requirements.txt
     - name: Read Julia version
       id: julia-version
-      run: python -c 'import tomllib; from pathlib import Path; print("resolved=", tomllib.loads(Path("Manifest.toml").read_text())["julia_version"], sep="")' >> "$GITHUB_OUTPUT"
+      run: python -c 'import tomllib; from pathlib import Path; print("value=", tomllib.loads(Path("Manifest.toml").read_text())["julia_version"], sep="")' >> "$GITHUB_OUTPUT"
     - name: Get environment hash
       id: hash
       run: |
         echo "value=${{ hashFiles('Project.toml', 'Manifest.toml', 'src/**') }}" >> "$GITHUB_OUTPUT"
-        echo "ver=${{ runner.os }}-julia-${{ steps.julia-version.outputs.resolved }}" >> "$GITHUB_OUTPUT"
-    - name: Cache notebook execution
+        echo "ver=${{ runner.os }}-julia-${{ steps.julia-version.outputs.value }}" >> "$GITHUB_OUTPUT"
+    - name: Cache Quarto notebook execution
       uses: actions/cache@v4
       id: cache-nb
       with:
@@ -50,30 +48,28 @@ jobs:
     - name: Setup Julia
       uses: julia-actions/setup-julia@v2
       with:
-        version: ${{ steps.julia-version.outputs.resolved }}
+        version: ${{ steps.julia-version.outputs.value }}
+        arch: ${{ runner.arch }}
     - name: Cache Julia packages
       uses: actions/cache@v4
       if: ${{ runner.environment == 'github-hosted' }}
       id: cache-julia
       with:
         path: ~/.julia
-        key: ${{ steps.hash.outputs.ver }}-${{ steps.hash.outputs.value }}
+        key: ${{ runner.os }}-julia-${{ steps.julia-version.outputs.value }}-${{ steps.hash.outputs.value }}
         restore-keys: |
-          ${{ steps.hash.outputs.ver }}-
+          ${{ runner.os }}-julia-${{ steps.julia-version.outputs.value }}
     - name: Install Julia packages
       if: ${{ runner.environment == 'self-hosted' || steps.cache-julia.outputs.cache-hit != 'true' }}
       shell: julia --color=yes --project=@. {0}
       run: |
-        using Pkg
+        using Pkg, Dates
         Pkg.resolve()
         Pkg.instantiate()
         Pkg.precompile()
-    - name: Clean Julia package directory
-      if: ${{ runner.environment == 'github-hosted' && steps.cache-julia.outputs.cache-hit != 'true' }}
-      shell: julia --color=yes {0}
-      run: |
-        using Pkg, Dates
-        Pkg.gc(collect_delay=Day(0))
+        if ENV["RUNNER_ENVIRONMENT"] == "github-hosted"
+            Pkg.gc(;collect_delay=Day(0))
+        end
     - name: Setup Quarto
       uses: quarto-dev/quarto-actions/setup@v2
     - name: Render Quarto Project
@@ -92,11 +88,10 @@ jobs:
     permissions:
       pages: write # to deploy to Pages
       id-token: write # to verify the deployment originates from an appropriate source
-      actions: read   # to download an artifact uploaded by `actions/upload-pages-artifact@v3`
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-slim
     steps:
       - name: Deploy to GitHub Pages
         id: deployment
