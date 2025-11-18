@@ -3,7 +3,6 @@ project:
   type: website
   output-dir: ../_site
   render:
-    - "*.{ipynb,qmd,md}"
     - "!*.jl"
 
 # https://quarto.org/docs/websites/#config-file
