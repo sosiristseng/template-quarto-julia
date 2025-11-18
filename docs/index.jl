@@ -1,19 +1,16 @@
----
-title: "Home"
----
+#===
+# Home
 
 This is a Quarto website.
 
 To learn more about Quarto websites visit <https://quarto.org/docs/websites>.
 
 ## Runtime environment
+===#
 
-```{julia}
 import InteractiveUtils
 InteractiveUtils.versioninfo()
-```
 
-```{julia}
+#---
 import Pkg
 Pkg.status()
-```

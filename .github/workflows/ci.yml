@@ -12,11 +12,12 @@ concurrency:
   cancel-in-progress: true
 
 env:
-  JULIA_NUM_THREADS: 'auto'
   JULIA_CONDAPKG_BACKEND: 'Null'
   JULIA_CONDAPKG_OFFLINE: 'true'
   JULIA_CI: 'true'
   NBCACHE: '.cache'
+  JULIA_NUM_THREADS: '2'
+  LITERATE_PROC: '2'
 
 jobs:
   CI:
@@ -28,7 +29,7 @@ jobs:
       uses: actions/setup-python@v6
       id: setup-python
       with:
-        python-version: '3.14'
+        python-version: '3.13'
     - name: Install Python dependencies
       run: pip install -r requirements.txt
     - name: Read Julia version
@@ -38,20 +39,23 @@ jobs:
       id: hash
       run: |
         echo "value=${{ hashFiles('Project.toml', 'Manifest.toml', 'src/**') }}" >> "$GITHUB_OUTPUT"
-        echo "ver=${{ runner.os }}-julia-${{ steps.julia-version.outputs.value }}" >> "$GITHUB_OUTPUT"
-    - name: Cache Quarto notebook execution
+    - name: Cache executed notebooks
       uses: actions/cache@v4
       id: cache-nb
       with:
-        path: docs/.cache
-        key: notebook-${{ steps.hash.outputs.value }}
+        path: |
+          ${{ env.NBCACHE }}/**/*.ipynb
+          ${{ env.NBCACHE }}/**/*.sha
+        key: notebook-${{ steps.hash.outputs.value }}-${{ hashFiles('docs/**') }}
+        restore-keys: |
+          notebook-${{ steps.hash.outputs.value }}-
     - name: Setup Julia
       uses: julia-actions/setup-julia@v2
       with:
         version: ${{ steps.julia-version.outputs.value }}
         arch: ${{ runner.arch }}
-    - name: Cache Julia packages
-      uses: actions/cache@v4
+    - name: Restore Julia packages
+      uses: actions/cache/restore@v4
       if: ${{ runner.environment == 'github-hosted' }}
       id: cache-julia
       with:
@@ -61,15 +65,25 @@ jobs:
           ${{ runner.os }}-julia-${{ steps.julia-version.outputs.value }}
     - name: Install Julia packages
       if: ${{ runner.environment == 'self-hosted' || steps.cache-julia.outputs.cache-hit != 'true' }}
-      shell: julia --color=yes --project=@. {0}
+      shell: julia --color=yes {0}
       run: |
         using Pkg, Dates
-        Pkg.resolve()
+        Pkg.add(["Literate", "JSON", "Tables", "MarkdownTables", "SHA"])
+        Pkg.activate(".")
         Pkg.instantiate()
         Pkg.precompile()
         if ENV["RUNNER_ENVIRONMENT"] == "github-hosted"
             Pkg.gc(;collect_delay=Day(0))
         end
+    - name: Save Julia packages
+      uses: actions/cache/save@v4
+      if: ${{ runner.environment == 'github-hosted' && steps.cache-julia.outputs.cache-hit != 'true' }}
+      with:
+        path: ~/.julia
+        key: ${{ steps.cache-julia.outputs.cache-primary-key }}
+    - name: Run notebooks
+      if: ${{ steps.cache-nb.outputs.cache-hit != 'true' }}
+      run: julia --project=@. --color=yes -p ${{ env.LITERATE_PROC }} .github/ci.jl
     - name: Setup Quarto
       uses: quarto-dev/quarto-actions/setup@v2
     - name: Render Quarto Project
