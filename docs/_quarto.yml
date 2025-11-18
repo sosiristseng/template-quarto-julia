@@ -32,9 +32,9 @@ format:
     css: styles.css
 
 # Default options
-notebook-links: true
+# notebook-links: true
 
 # Execution
-execute:
-  cache: true
-engines: ['julia']
+# execute:
+#   cache: true
+# engines: ['julia']
