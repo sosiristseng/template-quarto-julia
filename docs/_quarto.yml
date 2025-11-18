@@ -2,6 +2,9 @@
 project:
   type: website
   output-dir: ../_site
+  render:
+    - "!*.jl"
+    - "*.{ipynb,qmd,md}"
 
 # https://quarto.org/docs/websites/#config-file
 # https://quarto.org/docs/reference/projects/websites.html
@@ -32,9 +35,9 @@ format:
     css: styles.css
 
 # Default options
-notebook-links: true
+# notebook-links: true
 
 # Execution
-execute:
-  cache: true
-engines: ['julia']
+# execute:
+#   cache: true
+# engines: ['julia']
