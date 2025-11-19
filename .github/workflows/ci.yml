@@ -88,6 +88,7 @@ jobs:
       run: cp --verbose -rf ${{ env.NBCACHE }}/docs/* docs/
     - name: Setup Quarto
       uses: quarto-dev/quarto-actions/setup@v2
+      if: ${{ runner.environment == 'github-hosted' }}
     - name: Remove all jl files preventing Quarto from rendering them
       run: find docs/ -type f -name '*.jl' -delete
     - name: Render Quarto Project
