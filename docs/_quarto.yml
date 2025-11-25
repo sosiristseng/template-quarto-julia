@@ -1,35 +1,36 @@
 # https://quarto.org/docs/projects/quarto-projects.html
 project:
-  type: website
+  type: book
   output-dir: ../_site
 
-# https://quarto.org/docs/websites/#config-file
-# https://quarto.org/docs/reference/projects/websites.html
-website:
+# https://quarto.org/docs/books/
+book:
   title: Quarto Julia Template
+  author: "Wen-Wei Tseng"
   repo-url: https://github.com/sosiristseng/template-quarto-julia
+  site-url: https://sosiristseng.github.io/template-quarto-julia
   page-navigation: true
-  back-to-top-navigation: true
-  navbar:
-    search: true
-    tools:
-      - icon: github
-        href: https://github.com/sosiristseng/template-quarto-julia
-        text: GitHub repo
-  sidebar:
-    style: docked
-    contents: auto
+  bread-crumbs: true
+  chapters:
+    - index.ipynb
+    - pythonplot-lit.ipynb
+    - pythonplot.ipynb
+    - part: "Subdir"
+      chapters:
+        - plots-lit.ipynb
+        - plots.ipynb
+  appendices:
+    - about.qmd
+
+# bibliography: references.bib
 
 # https://quarto.org/docs/output-formats/html-basics.html
 format:
   html:
+    code-link: true
     theme:
-      light: flatly
-      dark: darkly
-    grid:
-      sidebar-width: 350px
-    toc: true
-    css: styles.css
+      light: cosmo
+      dark: cyborg
 
 # Default options
 # notebook-links: true
