@@ -17,8 +17,8 @@ book:
     - pythonplot.ipynb
     - part: "Subdir"
       chapters:
-        - plots-lit.ipynb
-        - plots.ipynb
+        - sub/plots-lit.ipynb
+        - sub/plots.ipynb
   appendices:
     - about.qmd
 
