@@ -12,7 +12,7 @@ book:
   page-navigation: true
   bread-crumbs: true
   chapters:
-    - index.ipynb
+    - index.qmd
     - pythonplot.ipynb
     - part: "Subdir"
       chapters:
