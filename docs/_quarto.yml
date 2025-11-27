@@ -13,10 +13,10 @@ book:
   bread-crumbs: true
   chapters:
     - index.qmd
-    - pythonplot.ipynb
+    - pythonplot.qmd
     - part: "Subdir"
       chapters:
-        - sub/plots.ipynb
+        - sub/plots.qmd
   appendices:
     - about.qmd
 

@@ -47,7 +47,7 @@ jobs:
       uses: actions/cache@v4
       id: cache-nb
       with:
-        path: doc/**/.cache/
+        path: docs/**/.cache/
         key: notebook-${{ steps.hash.outputs.value }}
     - name: Setup Julia
       uses: julia-actions/setup-julia@v2

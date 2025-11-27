@@ -1,0 +1,11 @@
+# Plots.jl
+
+```{julia}
+using Plots
+using Random
+Random.seed!(2022)
+```
+
+```{julia}
+plot(rand(1:6, 5))
+```
