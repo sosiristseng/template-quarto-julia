@@ -12,12 +12,10 @@ book:
   page-navigation: true
   bread-crumbs: true
   chapters:
-    - index.ipynb
-    - pythonplot-lit.ipynb
+    - index.qmd
     - pythonplot.ipynb
     - part: "Subdir"
       chapters:
-        - sub/plots-lit.ipynb
         - sub/plots.ipynb
   appendices:
     - about.qmd
@@ -36,6 +34,6 @@ format:
 # notebook-links: true
 
 # Execution
-# execute:
-#   cache: true
-# engines: ['julia']
+execute:
+  cache: true
+engines: ['julia']
