@@ -32,7 +32,7 @@ format:
     toc: true
     theme:
       light: cosmo
-      dark: cyborg
+      dark: darkly
     # css: styles.css
 
 # Default options
