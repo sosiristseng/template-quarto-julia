@@ -70,9 +70,6 @@ jobs:
         using Pkg, Dates
         Pkg.instantiate()
         Pkg.precompile()
-        if ENV["RUNNER_ENVIRONMENT"] == "github-hosted"
-            Pkg.gc(;collect_delay=Day(0))
-        end
     - name: Setup Quarto
       uses: quarto-dev/quarto-actions/setup@v2
     - name: Render Quarto Project
