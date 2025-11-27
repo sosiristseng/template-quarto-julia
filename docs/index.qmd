@@ -14,5 +14,6 @@ InteractiveUtils.versioninfo()
 ```{julia}
 import Pkg
 Pkg.status()
+Pkg.instantiate()
 Pkg.precompile()
 ```
