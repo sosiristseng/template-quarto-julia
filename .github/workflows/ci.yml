@@ -54,7 +54,7 @@ jobs:
       with:
         version: ${{ steps.julia-version.outputs.value }}
         arch: ${{ runner.arch }}
-    - name: Restore Julia packages
+    - name: Cache Julia packages
       uses: actions/cache/restore@v4
       if: ${{ runner.environment == 'github-hosted' }}
       id: cache-julia
@@ -62,7 +62,7 @@ jobs:
         path: ~/.julia
         key: ${{ steps.hash.outputs.ver }}-${{ steps.hash.outputs.value }}
         restore-keys: |
-          ${{ steps.hash.outputs.ver }}
+          ${{ steps.hash.outputs.ver }}-
     - name: Install Julia packages
       if: ${{ runner.environment == 'self-hosted' || steps.cache-julia.outputs.cache-hit != 'true' }}
       shell: julia --color=yes --project=@. {0}
@@ -73,12 +73,6 @@ jobs:
         if ENV["RUNNER_ENVIRONMENT"] == "github-hosted"
             Pkg.gc(;collect_delay=Day(0))
         end
-    - name: Save Julia packages
-      uses: actions/cache/save@v4
-      if: ${{ runner.environment == 'github-hosted' && steps.cache-julia.outputs.cache-hit != 'true' }}
-      with:
-        path: ~/.julia
-        key: ${{ steps.cache-julia.outputs.cache-primary-key }}
     - name: Setup Quarto
       uses: quarto-dev/quarto-actions/setup@v2
     - name: Render Quarto Project
