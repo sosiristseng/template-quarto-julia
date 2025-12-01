@@ -21,6 +21,9 @@ end
                 delete!(datadict, "text/html")
                 delete!(datadict, "image/svg+xml")
             end
+            if haskey(datadict, "text/latex")
+                delete!(datadict, "text/plain")
+            end
         end
     end
     rm(nbpath; force=true)
