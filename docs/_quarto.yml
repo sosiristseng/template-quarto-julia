@@ -7,18 +7,25 @@ project:
 website:
   title: Quarto Julia Template
   page-navigation: true
+  bread-crumbs: true
   back-to-top-navigation: true
   repo-url: https://github.com/sosiristseng/template-quarto-julia
   site-url: https://sosiristseng.github.io/template-quarto-julia
+  search:
+    show-item-context: true
+    type: overlay
   sidebar:
-    style: "docked"
+    style: docked
+    collapse-level: 2
+    align: left
     search: true
     contents:
-      - index.qmd
-      - pythonplot.qmd
+      - index.ipynb
+      - symbolic.ipynb
+      - pythonplot.ipynb
       - section: "Subdir"
         contents:
-          - sub/plots.qmd
+          - sub/plots.ipynb
       - about.qmd
     tools:
       - icon: github
@@ -29,16 +36,16 @@ website:
 # https://quarto.org/docs/output-formats/html-basics.html
 format:
   html:
+    respect-user-color-scheme: true
     toc: true
-    theme:
-      light: cosmo
-      dark: darkly
+    theme: materia
+    code-copy: true
+    code-overflow: wrap
+    grid:
+      sidebar-width: 250px
+      body-width: 1200px
+      margin-width: 300px
+    # keep-md: true
     # css: styles.css
-
-# Default options
-# notebook-links: true
-
-# Execution
 execute:
-  cache: true
-engines: ['julia']
+  output: asis

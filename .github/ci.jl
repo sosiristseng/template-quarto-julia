@@ -2,6 +2,7 @@ using Distributed
 using Tables
 using MarkdownTables
 using SHA
+using IJulia
 
 @everywhere begin
     ENV["GKSwstype"] = "100"
@@ -21,14 +22,11 @@ end
                 delete!(datadict, "text/html")
                 delete!(datadict, "image/svg+xml")
             end
-            if haskey(datadict, "text/latex")
-                delete!(datadict, "text/plain")
-            end
         end
     end
     rm(nbpath; force=true)
     write(nbpath, JSON.json(nb, 1))
-    @info "Stripped SVG in $(nbpath). The original size is $(Base.format_bytes(oldfilesize)). The new size is $(Base.format_bytes(filesize(nbpath)))."
+    @info "Stripped SVG in $(nbpath). The original size is $(oldfilesize). The new size is $(filesize(nbpath))."
     return nbpath
 end
 
@@ -40,39 +38,15 @@ function clean_cache(cachedir)
             if ext == ".sha"
                 target = joinpath(joinpath(splitpath(root)[2:end]), fn)
                 nb = target * ".ipynb"
-                lit = target * ".jl"
-                if !isfile(nb) && !isfile(lit)
+                if !isfile(nb)
                     cachepath = joinpath(root, fn)
-                    @info "Notebook $(nb) or $(lit) not found. Removing $(cachepath) SHA and notebook."
-                    rm(cachepath * ".sha")
+                    @info "Notebook $(nb) not found. Removing SHA and notebook in $(cachepath)."
+                    rm(cachepath * ".sha"; force=true)
                     rm(cachepath * ".ipynb"; force=true)
                 end
             end
         end
     end
-end
-
-# Convert a Jupyter notebook into a Literate notebook. Adapted from https://github.com/JuliaInterop/NBInclude.jl.
-function to_literate(nbpath; shell_or_help=r"^\s*[;?]")
-    nb = open(JSON.parse, nbpath, "r")
-    jlpath = splitext(nbpath)[1] * ".jl"
-    open(jlpath, "w") do io
-        separator = ""
-        for cell in nb["cells"]
-            if cell["cell_type"] == "code"
-                s = join(cell["source"])
-                isempty(strip(s)) && continue # Jupyter doesn't number empty cells
-                occursin(shell_or_help, s) && continue  # Skip cells with shell and help commands
-                print(io, separator, "#---\n", s)  # Literate code block mark
-                separator = "\n\n"
-            elseif cell["cell_type"] == "markdown"
-                txt = join(cell["source"])
-                print(io, separator, "#===\n", txt, "\n===#")
-                separator = "\n\n"
-            end
-        end
-    end
-    return jlpath
 end
 
 # List notebooks without caches in a file tree
@@ -81,7 +55,7 @@ function list_notebooks(basedir, cachedir)
     for (root, _, files) in walkdir(basedir)
         for file in files
             name, ext = splitext(file)
-            if ext == ".ipynb" || ext == ".jl"
+            if ext == ".ipynb"
                 nb = joinpath(root, file)
                 shaval = read(nb, String) |> sha256 |> bytes2hex
                 @info "$(nb) SHA256 = $(shaval)"
@@ -92,28 +66,12 @@ function list_notebooks(basedir, cachedir)
                     @info "$(nb) cache misses. Writing hash to $(shafilename)."
                     mkpath(dirname(shafilename))
                     write(shafilename, shaval)
-                    if ext == ".ipynb"
-                        litnb = to_literate(nb)
-                        rm(nb; force=true)
-                        push!(list, litnb)
-                    elseif ext == ".jl"
-                        push!(list, nb)
-                    end
+                    push!(list, nb)
                 end
             end
         end
     end
     return list
-end
-
-# Run a Literate notebook
-@everywhere function run_literate(file, cachedir; rmsvg=true)
-    outpath = joinpath(abspath(pwd()), cachedir, dirname(file))
-    mkpath(outpath)
-    ipynb = Literate.notebook(file, dirname(file); mdstrings=true, execute=true)
-    rmsvg && strip_svg(ipynb)
-    cp(ipynb, joinpath(outpath, basename(ipynb)); force=true)
-    return ipynb
 end
 
 function main(;
@@ -123,27 +81,26 @@ function main(;
 
     mkpath(cachedir)
     clean_cache(cachedir)
-    litnbs = list_notebooks(basedir, cachedir)
+    nblist = list_notebooks(basedir, cachedir)
 
-    if !isempty(litnbs)
-        # Execute literate notebooks in worker process(es)
-        ts_lit = pmap(litnbs; on_error=identity) do nb
-            @elapsed run_literate(nb, cachedir; rmsvg)
-        end
-        failed = false
-        for (nb, t) in zip(litnbs, ts_lit)
-            if t isa ErrorException
-                println("Notebook: ", nb, "failed with error: \n", t.msg)
-                failed = true
+    if !isempty(nblist)
+        IJulia.installkernel("Julia", "--project=@.")
+        # nbconvert command options
+        ntasks = parse(Int, get(ENV, "NBCONVERT_JOBS", "1"))
+        kernelname = "--ExecutePreprocessor.kernel_name=julia-1.$(VERSION.minor)"
+        execute = ifelse(get(ENV, "ALLOWERRORS", "false") == "true", "--execute --allow-errors", "--execute")
+        timeout = "--ExecutePreprocessor.timeout=" * get(ENV, "TIMEOUT", "-1")
+        # Run the nbconvert commands in parallel
+        ts_ipynb = asyncmap(nblist; ntasks) do nb
+            @elapsed begin
+                nbout = joinpath(abspath(pwd()), cachedir, nb)
+                cmd = `jupyter nbconvert --to notebook $(execute) $(timeout) $(kernelname) --output $(nbout) $(nb)`
+                run(cmd)
+                rmsvg && strip_svg(nbout)
             end
         end
-
-        if failed
-            error("Please check literate notebook error(s).")
-        else
-            # Print execution result
-            Tables.table([litnbs ts_lit]; header=["Notebook", "Elapsed (s)"]) |> markdown_table(String) |> print
-        end
+        # Print execution result
+        Tables.table([nblist ts_ipynb]; header=["Notebook", "Elapsed (s)"]) |> markdown_table(String) |> print
     end
 end
 
