@@ -1,13 +1,9 @@
-using Distributed
 using Tables
 using MarkdownTables
 using SHA
 using IJulia
-
-@everywhere begin
-    ENV["GKSwstype"] = "100"
-    using Literate, JSON
-end
+using JSON
+ENV["GKSwstype"] = "100"
 
 # Strip SVG output from a Jupyter notebook
 @everywhere function strip_svg(nbpath)
