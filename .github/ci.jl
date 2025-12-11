@@ -6,7 +6,7 @@ using JSON
 ENV["GKSwstype"] = "100"
 
 # Strip SVG output from a Jupyter notebook
-@everywhere function strip_svg(nbpath)
+function strip_svg(nbpath)
     oldfilesize = filesize(nbpath)
     nb = open(JSON.parse, nbpath, "r")
     for cell in nb["cells"]
