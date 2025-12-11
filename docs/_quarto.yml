@@ -47,5 +47,5 @@ format:
       margin-width: 300px
     # keep-md: true
     # css: styles.css
-execute:
-  output: asis
+# execute:
+#   output: asis
