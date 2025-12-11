@@ -38,7 +38,7 @@ format:
   html:
     respect-user-color-scheme: true
     toc: true
-    theme: cosmo
+    theme: litera
     code-copy: true
     code-overflow: wrap
     grid:
