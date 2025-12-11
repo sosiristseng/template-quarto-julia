@@ -15,7 +15,7 @@ website:
     show-item-context: true
     type: overlay
   sidebar:
-    style: docked
+    style: floating
     collapse-level: 2
     align: left
     search: true
