@@ -9,16 +9,22 @@ website:
   page-navigation: true
   bread-crumbs: true
   back-to-top-navigation: true
+  reader-mode: true
   repo-url: https://github.com/sosiristseng/template-quarto-julia
   site-url: https://sosiristseng.github.io/template-quarto-julia
   search:
     show-item-context: true
     type: overlay
+  navbar:
+    search: true
+    tools:
+      - icon: github
+        href: https://github.com/sosiristseng/template-quarto-julia
   sidebar:
+    title: false
     style: floating
     collapse-level: 2
     align: left
-    search: true
     contents:
       - index.ipynb
       - symbolic.ipynb
@@ -27,9 +33,7 @@ website:
         contents:
           - sub/plots.ipynb
       - about.qmd
-    tools:
-      - icon: github
-        href: https://github.com/sosiristseng/template-quarto-julia
+
 
 # bibliography: references.bib
 
@@ -38,7 +42,9 @@ format:
   html:
     respect-user-color-scheme: true
     toc: true
-    theme: litera
+    theme:
+      light: flatly
+      dark: darkly
     code-copy: true
     code-overflow: wrap
     grid:
