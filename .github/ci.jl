@@ -90,7 +90,6 @@ function main(;
         ts_ipynb = asyncmap(nblist; ntasks) do nb
             @elapsed begin
                 nbout = joinpath(abspath(pwd()), cachedir, nb)
-                mkpath(dirname(nbout))
                 cmd = `jupyter nbconvert --to notebook $(execute) $(timeout) $(kernelname) --output $(nbout) $(nb)`
                 run(cmd)
                 rmsvg && strip_svg(nbout)
