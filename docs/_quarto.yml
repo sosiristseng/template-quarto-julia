@@ -1,7 +1,7 @@
 # https://quarto.org/docs/projects/quarto-projects.html
 project:
   type: website
-  output-dir: ../_site
+  output-dir: _site
 
 # https://quarto.org/docs/websites/
 website:
