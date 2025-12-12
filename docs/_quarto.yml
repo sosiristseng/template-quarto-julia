@@ -27,7 +27,6 @@ website:
     align: left
     contents:
       - index.ipynb
-      - symbolic.ipynb
       - pythonplot.ipynb
       - section: "Subdir"
         contents:
