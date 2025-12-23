@@ -28,9 +28,11 @@ website:
     contents:
       - index.ipynb
       - pythonplot.ipynb
+      - pythonplot-lit.ipynb
       - section: "Subdir"
         contents:
           - sub/plots.ipynb
+          - sub/plots-lit.ipynb
       - about.qmd
 
 
@@ -52,5 +54,3 @@ format:
       margin-width: 350px
     # keep-md: true
     # css: styles.css
-# execute:
-#   output: asis
