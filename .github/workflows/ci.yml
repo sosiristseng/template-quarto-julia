@@ -88,7 +88,9 @@ jobs:
       if: ${{ steps.cache-nb.outputs.cache-hit != 'true' }}
       run: julia --project=@. --color=yes -p ${{ env.LITERATE_PROC }} .github/ci.jl
     - name: Copy back built notebooks
-      run: cp --verbose -rf ${{ env.NBCACHE }}/docs/* docs/
+      run: |
+        cp --verbose -rf ${{ env.NBCACHE }}/docs/* docs/
+        find docs/ -type f -name "*.jl" -delete
     - name: Setup Quarto
       if: ${{ runner.environment == 'github-hosted' }}
       uses: quarto-dev/quarto-actions/setup@v2
