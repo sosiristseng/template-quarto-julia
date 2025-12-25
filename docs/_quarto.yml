@@ -15,6 +15,7 @@ website:
   search:
     show-item-context: true
     type: overlay
+  # https://quarto.org/docs/websites/website-navigation.html
   navbar:
     search: true
     tools:
@@ -43,9 +44,7 @@ format:
   html:
     respect-user-color-scheme: true
     toc: true
-    theme:
-      light: flatly
-      dark: darkly
+    theme: simplex
     code-copy: true
     code-overflow: wrap
     grid:
