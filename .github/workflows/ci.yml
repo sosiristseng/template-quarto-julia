@@ -114,11 +114,6 @@ jobs:
       run: |
         cp --verbose -rf ${{ env.NBCACHE }}/docs/* docs/
         find docs/ -type f -name "*.jl" -delete
-    - name: Upload notebook
-      uses:  actions/upload-artifact@v6
-      with:
-        name: notebooks
-        path: docs/**/*.ipynb
     - name: Setup Quarto
       if: ${{ runner.environment == 'github-hosted' }}
       uses: quarto-dev/quarto-actions/setup@v2
