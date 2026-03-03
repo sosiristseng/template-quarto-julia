@@ -23,9 +23,9 @@ website:
         href: https://github.com/sosiristseng/template-quarto-julia
   sidebar:
     title: false
-    style: floating
+    style: docked
     collapse-level: 2
-    align: left
+    alignment: left
     contents:
       - index.ipynb
       - pythonplot.ipynb
@@ -40,11 +40,14 @@ website:
 # bibliography: references.bib
 
 # https://quarto.org/docs/output-formats/html-basics.html
+# https://quarto.org/docs/output-formats/html-themes.html
 format:
   html:
     respect-user-color-scheme: true
     toc: true
-    theme: simplex
+    theme: cosmo
+    fontsize: 1.1em
+    linestretch: 1.7
     code-copy: true
     code-overflow: wrap
     grid:
