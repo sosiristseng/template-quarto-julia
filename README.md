@@ -3,7 +3,8 @@
 Click `Use this template` button to copy this repository.
 
 Publish Julia notebooks using [Quarto](https://quarto.org/). (See `ci.yml`.)
-- Julia notebooks are executed by [QuartoNotebookRunner.jl](https://github.com/PumasAI/QuartoNotebookRunner.jl)
+
+- Julia notebooks are executed by [Literate.jl](https://github.com/fredrikekre/Literate.jl)
 - Automatic dependency updates by dependabot and `update-manifest.yml` GitHub actions.
 - Checks if the links in the notebooks are valid with `lychee`. (See `linkcheck.yml`)
 
@@ -11,7 +12,6 @@ See also:
 
 - https://github.com/sosiristseng/template-juliabook : Using  multiprocessing to run Literate notebooks in parallel. Jupyter Book builds the website.
 - https://github.com/sosiristseng/template-juliabook-matrix : Using the dynamic parallel matrix to run Literate notebooks in parallel. Jupyter Book builds the website.
-- https://github.com/sosiristseng/template-quarto-literate : Using multiprocessing to run Literate notebooks in parallel. Quarto builds the website.
 - https://github.com/sosiristseng/template-quarto-julia-matrix : Using the dynamic parallel matrix to run Literate notebooks in parallel. Quarto builds the website.
 - https://github.com/sosiristseng/template-quarto-julia : Using Quarto to run and render Quarto notebooks (`*qmd`).
 
