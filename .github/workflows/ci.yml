@@ -14,17 +14,23 @@ concurrency:
 env:
   LITERATE_PROC: '2'
   JULIA_CI: 'true'
-  JULIA_CONDAPKG_ENV: '@mpl'
+  PY_VER: '3.14'
+  JULIA_CONDAPKG_BACKEND: 'Null'
   JULIA_NUM_THREADS: '2'
   OPENBLAS_NUM_THREADS: '1'
   NBCACHE: '.cache'
 
 jobs:
-  execute:
+  CI:
     runs-on: ubuntu-latest
     steps:
     - name: Checkout repository
       uses: actions/checkout@v6
+    - name: Setup Python
+      uses: actions/setup-python@v6
+      with:
+        python-version: ${{ env.PY_VER }}
+        cache: 'pip'
     - name: Read Julia version
       id: julia-version
       uses: julia-actions/julia-version@main
@@ -34,6 +40,7 @@ jobs:
       id: hash
       run: |
         echo "value=${{ hashFiles('Project.toml', 'Manifest.toml', 'src/**') }}" >> "$GITHUB_OUTPUT"
+        echo "nb=${{ hashFiles('docs/**/*.jl', 'docs/**/*.ipynb') }}" >> "$GITHUB_OUTPUT"
     - name: Cache executed notebooks
       uses: actions/cache@v5
       id: cache-nb
@@ -41,7 +48,7 @@ jobs:
         path: |
           ${{ env.NBCACHE }}/**/*.ipynb
           ${{ env.NBCACHE }}/**/*.sha
-        key: notebook-${{ steps.hash.outputs.value }}-${{ hashFiles('docs/**') }}
+        key: notebook-${{ steps.hash.outputs.value }}-${{ steps.hash.outputs.nb }}
         restore-keys: |
           notebook-${{ steps.hash.outputs.value }}-
     - name: Setup Julia
@@ -67,12 +74,9 @@ jobs:
         Pkg.instantiate()
         Pkg.resolve()
         Pkg.precompile()
-        Pkg.activate()
-        Pkg.add(["JSON", "Literate", "MarkdownTables", "SHA", "Tables"])
         if ENV["RUNNER_ENVIRONMENT"] == "github-hosted"
             Pkg.gc(;collect_delay=Day(0))
         end
-        using Literate
     - name: Save Julia packages
       uses: actions/cache/save@v5
       if: ${{ steps.cache-nb.outputs.cache-hit != 'true' && runner.environment == 'github-hosted' && steps.cache-julia.outputs.cache-hit != 'true' }}
@@ -81,26 +85,9 @@ jobs:
         key: ${{ steps.cache-julia.outputs.cache-primary-key }}
     - name: Run notebooks
       if: ${{ steps.cache-nb.outputs.cache-hit != 'true' }}
-      env:
-        JULIA_CONDAPKG_OFFLINE: 'true'
-      run: julia --project=@. --color=yes -p ${{ env.LITERATE_PROC }} .github/ci.jl
-    - name: Upload Notebook
-      uses: actions/upload-artifact@v7
-      with:
-        name: notebooks
-        path: ${{ env.NBCACHE }}
-        include-hidden-files: true
-  render:
-    needs: execute
-    runs-on: ubuntu-latest
-    steps:
-    - name: Checkout
-      uses: actions/checkout@v6
-    - name: Download notebooks
-      uses: actions/download-artifact@v8
-      with:
-        name: notebooks
-        path: ${{ env.NBCACHE }}/
+      run: |
+        pip install -r requirements.txt
+        julia --project=@. --color=yes -p ${{ env.LITERATE_PROC }} .github/ci.jl
     - name: Copy back built notebooks
       run: |
         cp --verbose -rf ${{ env.NBCACHE }}/docs/* docs/
@@ -115,23 +102,10 @@ jobs:
       if: ${{ github.ref == 'refs/heads/main' }}
       with:
         path: docs/_site/
-  # CI conclusion for GitHub status check
-  CI:
-    needs: render
-    if: always()
-    runs-on: ubuntu-slim
-    steps:
-      - run: |
-          if [[ ${{ needs.render.result }} == "success" ]]; then
-            echo "Tests passed"
-            exit 0
-          else
-            echo "Tests failed"
-            exit 1
-          fi
+
   deploy:
     name: Deploy to GitHub pages
-    needs: render
+    needs: CI
     if: ${{ github.ref == 'refs/heads/main'}}
     # Grant GITHUB_TOKEN the permissions required to make a Pages deployment
     permissions:
