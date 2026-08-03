@@ -39,10 +39,10 @@ jobs:
         echo "nb=${{ hashFiles('docs/**/*.jl', 'docs/**/*.ipynb') }}" >> "$GITHUB_OUTPUT"
     # https://github.com/jupyter/docker-stacks/blob/main/images/minimal-notebook/setup-scripts/setup-julia-packages.bash
     - name: Set Julia CPU target (x64)
-      if: runner.arch == 'X64'
-      run: echo 'JULIA_CPU_TARGET=generic;sandybridge,-xsaveopt,clone_all;haswell,-rdrnd,base(1);x86-64-v4,-rdrnd,base(1)' >> $GITHUB_ENV
+      if: ${{ runner.arch == 'X64' && runner.environment == 'github-hosted' }}
+      run: echo 'JULIA_CPU_TARGET=generic;sandybridge,-xsaveopt,clone_all;znver3,-rdrnd,base(1);saphirerapids,-rdrnd,base(1)' >> $GITHUB_ENV
     - name: Set Julia CPU target (ARM64)
-      if: runner.arch == 'ARM64'
+      if: ${{ runner.arch == 'ARM64' && runner.environment == 'github-hosted' }}
       run: echo 'JULIA_CPU_TARGET=generic;cortex-a57;thunderx2t99;carmel,clone_all;apple-m1,base(3);neoverse-512tvb,base(3)' >> $GITHUB_ENV
     - name: Cache executed notebooks
       uses: actions/cache@v6
