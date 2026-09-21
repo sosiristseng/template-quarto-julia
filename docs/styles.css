@@ -1,0 +1,23 @@
+/*-- scss:defaults --*/
+#quarto-sidebar .sidebar-item-text {
+    font-size: 1.1rem;
+}
+
+/* Hover state styling */
+#quarto-sidebar .sidebar-item-container:hover .sidebar-item-text {
+  color: #0066cc;             /* Text color on hover */
+  text-decoration: underline; /* Text decoration on hover */
+}
+
+/* Active page link styling */
+#quarto-sidebar .sidebar-item.active .sidebar-item-text {
+  color: #004080;             /* Color of active link */
+  font-weight: bold;          /* Bold weight for current page */
+}
+
+/* Padding and spacing around sidebar items */
+#quarto-sidebar .sidebar-item-container {
+  padding-top: 0.25rem;
+  padding-bottom: 0.25rem;
+  border-radius: 4px;         /* Rounded corners on hover/active */
+}
