@@ -55,4 +55,4 @@ format:
       body-width: 1000px
       margin-width: 350px
     # keep-md: true
-    # css: styles.css
+    css: styles.css
