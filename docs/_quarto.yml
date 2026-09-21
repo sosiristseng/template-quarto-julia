@@ -45,7 +45,7 @@ format:
   html:
     respect-user-color-scheme: true
     toc: true
-    theme: cosmo
+    theme: [cosmo, styles.scss]
     fontsize: 1.1em
     linestretch: 1.7
     code-copy: true
@@ -55,4 +55,4 @@ format:
       body-width: 1000px
       margin-width: 350px
     # keep-md: true
-    css: styles.css
+    # css: styles.css
