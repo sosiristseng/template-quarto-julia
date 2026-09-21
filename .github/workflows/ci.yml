@@ -32,6 +32,8 @@ jobs:
       id: setup-python
       with:
         python-version: 3.x
+    - name: Install Python deps
+      run: pip install -r requirements.txt
     - name: Read Julia version
       id: julia-version
       run:
