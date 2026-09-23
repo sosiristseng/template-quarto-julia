@@ -92,12 +92,12 @@ jobs:
       if: ${{ runner.environment == 'github-hosted' }}
       uses: quarto-dev/quarto-actions/setup@v2
     - name: Render Quarto Project
-      run: quarto render docs/
+      run: quarto render docs/ --to html
     - name: Upload pages artifact
       uses: actions/upload-pages-artifact@v5
       if: ${{ github.ref == 'refs/heads/main' }}
       with:
-        path: 'docs/_site/'
+        path: docs/_site/
 
   deploy:
     name: Deploy to GitHub pages
