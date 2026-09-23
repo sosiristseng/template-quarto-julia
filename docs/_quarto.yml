@@ -51,8 +51,11 @@ format:
     code-copy: true
     code-overflow: wrap
     grid:
-      sidebar-width: 300px
-      body-width: 1000px
-      margin-width: 350px
-    # keep-md: true
+      sidebar-width: 320px
+      body-width: 900px
+      margin-width: 320px
     css: styles.css
+
+callout-appearance: simple
+date: today
+date-format: iso
