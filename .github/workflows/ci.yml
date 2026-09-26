@@ -19,8 +19,6 @@ env:
   JULIA_CPU_TARGET: 'sysimage'
   OPENBLAS_NUM_THREADS: '1'
   NBCACHE: '.cache'
-  JULIA_CONDAPKG_OFFLINE: 'true'
-  JULIA_CONDAPKG_BACKEND: 'Null'
 
 jobs:
   CI:
@@ -28,15 +26,6 @@ jobs:
     steps:
     - name: Checkout repository
       uses: actions/checkout@v7
-    - name: Setup Python
-      uses: actions/setup-python@v7
-      id: setup-python
-      with:
-        python-version: 3.x
-    - name: Install the latest version of uv
-      uses: astral-sh/setup-uv@c18668ad3cf93ea998bef934396af7bb5c839dc7 # v10.2.0
-    - name: Install Python deps
-      run: uv pip install --system -r requirements.txt
     - name: Read Julia version
       id: julia-version
       run: echo "resolved=$(awk -F '"' '/^[[:space:]]*julia_version/ {print $2}' Manifest.toml)" >> "$GITHUB_OUTPUT"
