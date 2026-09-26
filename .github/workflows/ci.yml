@@ -16,6 +16,7 @@ env:
   LITERATE_PROC: '2'
   JULIA_CI: 'true'
   JULIA_NUM_THREADS: '2'
+  JULIA_CPU_TARGET: 'sysimage'
   OPENBLAS_NUM_THREADS: '1'
   NBCACHE: '.cache'
   JULIA_CONDAPKG_OFFLINE: 'true'
@@ -32,8 +33,10 @@ jobs:
       id: setup-python
       with:
         python-version: 3.x
+    - name: Install the latest version of uv
+      uses: astral-sh/setup-uv@c18668ad3cf93ea998bef934396af7bb5c839dc7 # v10.2.0
     - name: Install Python deps
-      run: pip install -r requirements.txt
+      run: uv pip install --system -r requirements.txt
     - name: Read Julia version
       id: julia-version
       run:
@@ -44,9 +47,6 @@ jobs:
         echo "jl=${{ runner.os }}-${{ runner.arch }}-julia-${{ steps.julia-version.outputs.resolved }}" >> "$GITHUB_OUTPUT"
         echo "env=${{ env.CACHE_NUM }}-${{ hashFiles('Project.toml', 'Manifest.toml', 'Startup/**') }}" >> "$GITHUB_OUTPUT"
         echo "nb=${{ hashFiles('docs/**/*.jl', 'docs/**/*.ipynb') }}" >> "$GITHUB_OUTPUT"
-    - name: Set Julia CPU target (x64)
-      if: ${{ runner.arch == 'X64' && runner.environment == 'github-hosted' }}
-      run: echo 'JULIA_CPU_TARGET=generic;sandybridge,-xsaveopt,clone_all;haswell,-rdrnd,base(1)' >> $GITHUB_ENV
     - name: Cache executed notebooks
       uses: actions/cache@v6
       id: cache-nb
@@ -72,12 +72,12 @@ jobs:
         restore-keys: |
           ${{ steps.hash.outputs.jl }}-
     - name: Install Julia packages
-      if: ${{ steps.cache-nb.outputs.cache-hit != 'true' && (runner.environment == 'self-hosted' || steps.cache-julia.outputs.cache-hit != 'true') }}
+      if: ${{ steps.cache-julia.outputs.cache-hit != 'true' }}
       shell: julia --color=yes --project=@. {0}
       run: using Pkg; Pkg.instantiate(); Pkg.precompile()
     - name: Save Julia package cache
       uses: actions/cache/save@v6
-      if: ${{ steps.cache-nb.outputs.cache-hit != 'true' && runner.environment == 'github-hosted' && steps.cache-julia.outputs.cache-hit != 'true' }}
+      if: ${{ steps.cache-julia.outputs.cache-hit != 'true' }}
       with:
         path: ~/.julia
         key: ${{ steps.cache-julia.outputs.cache-primary-key }}
