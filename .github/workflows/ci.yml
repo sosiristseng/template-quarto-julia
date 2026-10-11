@@ -16,8 +16,12 @@ env:
   LITERATE_PROC: '4'
   JULIA_CI: 'true'
   JULIA_NUM_THREADS: '1'
+  JULIA_MAX_NUM_PRECOMPILE_FILES: '50'
   OPENBLAS_NUM_THREADS: '1'
   NBCACHE: '.cache'
+  PY_VER: '3.14'
+  JULIA_CONDAPKG_BACKEND: 'Null'
+  JULIA_CONDAPKG_OFFLINE: 'true'
 
 jobs:
   CI:
@@ -44,6 +48,17 @@ jobs:
         key: notebook-${{ steps.hash.outputs.env }}-${{ steps.hash.outputs.nb }}
         restore-keys: |
           notebook-${{ steps.hash.outputs.env }}-
+    - name: Setup Python
+      uses: actions/setup-python@v7
+      if: ${{ steps.cache-nb.outputs.cache-hit != 'true' }}
+      with:
+        python-version: ${{ env.PY_VER }}
+    - name: Install the latest version of uv
+      if: ${{ steps.cache-nb.outputs.cache-hit != 'true' }}
+      uses: astral-sh/setup-uv@1c37ad07a6a961277cf70c0d37d6f313000f5884 # v10.3.0
+    - name: Install Python deps
+      if: ${{ steps.cache-nb.outputs.cache-hit != 'true' }}
+      run: uv pip install --system -r requirements.txt
     - name: Setup Julia
       uses: julia-actions/setup-julia@v3
       if: ${{ steps.cache-nb.outputs.cache-hit != 'true' }}
@@ -60,8 +75,15 @@ jobs:
           ${{ steps.hash.outputs.jl }}-
     - name: Install Julia packages
       if: ${{ steps.cache-nb.outputs.cache-hit != 'true' && (runner.environment == 'self-hosted' || steps.cache-julia.outputs.cache-hit != 'true') }}
-      shell: julia --color=yes --project=@. {0}
-      run: using Pkg; Pkg.instantiate(); Pkg.precompile()
+      shell: julia --color=yes {0}
+      run: |
+        using Pkg
+        Pkg.add(["JSON", "Literate", "MarkdownTables", "SHA", "Tables"])
+        Pkg.activate(".")
+        Pkg.resolve()
+        Pkg.instantiate()
+        Pkg.precompile()
+        get(ENV, "RUNNER_ENVIRONMENT", "") == "github-hosted" && Pkg.gc()
     - name: Save Julia package cache
       uses: actions/cache/save@v6
       if: ${{ steps.cache-nb.outputs.cache-hit != 'true' && runner.environment == 'github-hosted' && steps.cache-julia.outputs.cache-hit != 'true' }}
