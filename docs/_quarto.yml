@@ -28,11 +28,9 @@ website:
     alignment: left
     contents:
       - index.ipynb
-      - pythonplot.ipynb
       - pythonplot-lit.ipynb
       - section: "Subdir"
         contents:
-          - sub/plots.ipynb
           - sub/plots-lit.ipynb
       - about.qmd
 
