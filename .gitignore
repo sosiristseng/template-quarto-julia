@@ -55,6 +55,7 @@ LocalPreferences.toml
 # Oupput
 /site
 /public
+*.ipynb
 
 # Quarto
 _site/
