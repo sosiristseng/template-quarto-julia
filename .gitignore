@@ -55,6 +55,7 @@ LocalPreferences.toml
 # Output
 /site
 /public
+*.ipynb
 .cache/
 
 # Quarto
