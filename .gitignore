@@ -52,10 +52,10 @@ docs/site/
 # Manifest.toml
 LocalPreferences.toml
 
-# Oupput
+# Output
 /site
 /public
-*.ipynb
+.cache/
 
 # Quarto
 _site/
