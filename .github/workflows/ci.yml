@@ -80,17 +80,11 @@ jobs:
       - name: Run notebooks
         if: ${{ steps.cache-nb.outputs.cache-hit != 'true' }}
         run: julia --project=@. --color=yes -p ${{ env.LITERATE_PROC }} .github/ci.jl
-      - name: Copy back built notebooks
-        run: cp --verbose -rf ${{ env.NBCACHE }}/docs/* docs/
-      - name: Copy back built notebooks
-        run: |
-          cp --verbose -rf ${{ env.NBCACHE }}/docs/* docs/
-          find docs/ -type f -name "*.jl" -delete
-      - name: Setup Quarto
-        if: ${{ runner.environment == 'github-hosted' }}
-        uses: quarto-dev/quarto-actions/setup@v2
-      - name: Render Quarto Project
-        run: quarto render docs/ --to html
+      # Stages the notebooks, installs the latest standalone Quarto (verified against the
+      # release's own checksums.txt), renders a throwaway copy of docs/ and asserts every
+      # page. NBCACHE and DOCDIR are read from the environment; see .github/quarto.sh.
+      - name: Build site
+        run: bash .github/quarto.sh
       - name: Upload pages artifact
         uses: actions/upload-pages-artifact@v5
         if: ${{ github.ref == 'refs/heads/main' }}
